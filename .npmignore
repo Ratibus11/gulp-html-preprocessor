@@ -1,0 +1,6 @@
+# Source files
+src
+
+# Technical files
+tsconfig.json
+.gitignore
