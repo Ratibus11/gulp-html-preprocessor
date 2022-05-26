@@ -8,6 +8,7 @@
 		"strict": true,
 		"esModuleInterop": true,
 		"forceConsistentCasingInFileNames": true,
+		"downlevelIteration": true,
 
 		"noImplicitAny": true,
 		"noImplicitOverride": true,
