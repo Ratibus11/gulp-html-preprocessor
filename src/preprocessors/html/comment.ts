@@ -1,6 +1,6 @@
 import * as types from "../../types";
 import { preprocessor, preprocessorVariables } from "../../types";
-import { notInIf, ifNotClosed } from "../../errors";
+import { notInIf, ifNotClosed, unsupportedInstruction } from "../../errors";
 import { generate } from "../../utils/unique";
 
 const regex = /<!--\s{0,}@(.*?)\s{1,}(.*?)\s{0,}-->/gi;
@@ -24,6 +24,15 @@ function process(data: string, variables: preprocessorVariables): string {
 							data
 						);
 						break;
+					case "elseif":
+					case "else":
+					case "endif":
+						notInIf(preprocessor.instruction, preprocessor.value);
+					default:
+						unsupportedInstruction(
+							preprocessor.instruction,
+							preprocessor.value
+						);
 				}
 			}
 		});
