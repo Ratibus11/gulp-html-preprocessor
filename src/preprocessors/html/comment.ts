@@ -61,7 +61,7 @@ function processIf(
 
 	while (true) {
 		if (startContent.instruction == "endif") {
-			if (startContent.expression != undefined) {
+			if (startContent.expression != "") {
 				endifWithExpression(startContent);
 			}
 			return data;
@@ -127,7 +127,7 @@ function evaluateCondition(
 		return true;
 	}
 
-	if (preprocessor.expression == undefined) {
+	if (preprocessor.expression == "") {
 		noExpression(preprocessor);
 	}
 
