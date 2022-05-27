@@ -3,7 +3,7 @@
 	"version": "0.0.1",
 	"description": "Gulp preprocessor module for HTML",
 	"main": "build/app.js",
-	"module": "build/app.js",
+	"types": "build/app.d.ts",
 	"files": [
 		"build/"
 	],
