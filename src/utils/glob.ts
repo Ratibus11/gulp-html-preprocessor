@@ -5,7 +5,7 @@ import { glob as globModule } from "glob";
  * @param globValue Glob string to evaluate
  * @returns All files that matche with the given globe.
  */
-export function glob(globs: string | string[]): string[] {
+function glob(globs: string | string[]): string[] {
 	if (Array.isArray(globs)) {
 		return globs
 			.map((glob) => {
@@ -16,3 +16,5 @@ export function glob(globs: string | string[]): string[] {
 		return globModule.sync(globs);
 	}
 }
+
+export { glob };

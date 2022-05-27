@@ -10,7 +10,7 @@ import { processFile } from "./preprocessors/process";
  * @param globs Globs to process.
  * @param options Variables to process. Can be strings, numbers or booleans.
  */
-export function process(
+function process(
 	globs: string[] | string,
 	variables?: preprocessorVariables
 ): void {
@@ -18,3 +18,5 @@ export function process(
 		processFile(match, variables || {});
 	});
 }
+
+export { process };
