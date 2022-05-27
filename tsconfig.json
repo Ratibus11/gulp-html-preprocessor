@@ -1,7 +1,9 @@
 {
 	"compilerOptions": {
+		"target": "ES5",
 		"module": "CommonJS",
 		"outDir": "./build",
+		"types": ["node"],
 
 		"declaration": true,
 		"strict": true,
