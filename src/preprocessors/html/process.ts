@@ -14,6 +14,7 @@ function process(path: string, variables: preprocessorVariables): string {
 	var data = load(path);
 
 	data = processComment(data, variables);
+	console.log(data);
 	data = processTagAttribute(data);
 
 	return data;

@@ -24,4 +24,8 @@ function notInIf(instruction: string, comment: string): never {
 	);
 }
 
-export { readFile, unsupportedInstruction, notInIf };
+function ifNotClosed(): never {
+	display(`processing file preprocessor`, "'endif' enclosure not found.");
+}
+
+export { readFile, unsupportedInstruction, notInIf, ifNotClosed };
