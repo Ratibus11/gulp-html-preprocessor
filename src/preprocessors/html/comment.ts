@@ -1,6 +1,12 @@
 import * as types from "../../types";
 import { preprocessor, preprocessorVariables } from "../../types";
-import { notInIf, ifNotClosed, unsupportedInstruction } from "../../errors";
+import {
+	notInIf,
+	ifNotClosed,
+	unsupportedInstruction,
+	noExpression,
+	endifWithExpression,
+} from "../../errors";
 import { generate } from "../../utils/unique";
 
 const regex = /<!--\s{0,}@(.*?)\s{1,}(.*?)\s{0,}-->/gi;
@@ -27,12 +33,9 @@ function process(data: string, variables: preprocessorVariables): string {
 					case "elseif":
 					case "else":
 					case "endif":
-						notInIf(preprocessor.instruction, preprocessor.value);
+						notInIf(preprocessor);
 					default:
-						unsupportedInstruction(
-							preprocessor.instruction,
-							preprocessor.value
-						);
+						unsupportedInstruction(preprocessor);
 				}
 			}
 		});
@@ -58,6 +61,9 @@ function processIf(
 
 	while (true) {
 		if (startContent.instruction == "endif") {
+			if (startContent.expression != undefined) {
+				endifWithExpression(startContent);
+			}
 			return data;
 		}
 
@@ -119,6 +125,10 @@ function evaluateCondition(
 ): boolean {
 	if (preprocessor.instruction == "else") {
 		return true;
+	}
+
+	if (preprocessor.expression == undefined) {
+		noExpression(preprocessor);
 	}
 
 	const condition = preprocessor.expression!.replace(/(\\|'|"|`)/g, "\\$1");
