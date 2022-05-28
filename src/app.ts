@@ -3,7 +3,7 @@ import { glob } from "./utils/glob";
 import { preprocessorVariables } from "./types";
 
 // Preprocessor
-import { processFile } from "./preprocessors/process";
+import { process as processHTML } from "./preprocessors/process";
 
 /**
  * Extension's entry point. Process all files which matches with the given globs.
@@ -15,7 +15,7 @@ function process(
 	variables?: preprocessorVariables
 ): void {
 	glob(globs).forEach((match) => {
-		processFile(match, variables || {});
+		processHTML(match, variables || {});
 	});
 }
 

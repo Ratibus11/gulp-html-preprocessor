@@ -1,13 +1,13 @@
-import * as types from "../../types";
-import { preprocessor, preprocessorVariables } from "../../types";
+import * as types from "../types";
+import { preprocessor, preprocessorVariables } from "../types";
 import {
 	notInIf,
 	ifNotClosed,
 	unsupportedInstruction,
 	noExpression,
 	endifWithExpression,
-} from "../../errors";
-import { generate } from "../../utils/unique";
+} from "../errors";
+import { generate } from "../utils/unique";
 
 const regex = /<!--\s{0,}@(.*?)\s{1,}(.*?)\s{0,}-->/gi;
 

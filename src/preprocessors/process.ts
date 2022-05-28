@@ -1,21 +1,22 @@
-// Utils
-import { extname } from "path";
+import { process as processComment } from "./comment";
+import { process as processTagAttribute } from "./tagAttribute";
 import { preprocessorVariables } from "../types";
 
-// Preprocessors
-import { process as processHtml } from "./html/process";
+import { load } from "../utils/file";
 
 /**
- * Process a given file with the preprocessor.
- * @param path
- * @note The preprocessor's bevaharior depends of the file's extension.
- *       If the preprocessor don't support the extension, nothing will happen.
+ * Execute HTML preprocessor on the given path with given variables.
+ * @param path HTML file to process.
+ * @param variables Variables to use during the process.
  */
-function processFile(path: string, variables: preprocessorVariables): void {
-	switch (extname(path)) {
-		case ".html":
-			processHtml(path, variables);
-	}
+function process(path: string, variables: preprocessorVariables): string {
+	var data = load(path);
+
+	data = processComment(data, variables);
+	console.log(data);
+	data = processTagAttribute(data);
+
+	return data;
 }
 
-export { processFile };
+export { process };
