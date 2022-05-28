@@ -12,6 +12,13 @@ function process(data: string, variables: preprocessorVariables): string {
 	data = processComments(data, variables);
 	data = processTags(data);
 
+	data = data
+		.split("\n")
+		.filter((line) => {
+			return line.trim() != "";
+		})
+		.join("\n");
+
 	return data;
 }
 
