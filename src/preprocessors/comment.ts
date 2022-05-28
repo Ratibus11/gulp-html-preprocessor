@@ -82,7 +82,7 @@ function processIf(
 		}
 
 		var endContent = getNextSameLevelPreprocessor(
-			preprocessor,
+			startContent,
 			preprocessors,
 			["elseif", "else", "endif"]
 		);
@@ -250,15 +250,15 @@ function getNextSameLevelPreprocessor(
  * @throws {PreprocessorNotFound} `preprocessor` is not in `preprocessors`.
  */
 function getPreprocessorIndex(
-	preprocessor: preprocessor.html.comment,
+	searchedPreprocessor: preprocessor.html.comment,
 	preprocessors: preprocessor.html.comment[]
 ): number {
 	let index = preprocessors.findIndex((preprocessor) => {
-		return preprocessor.uid == preprocessor.uid;
+		return preprocessor.uid == searchedPreprocessor.uid;
 	});
 
 	if (index == -1) {
-		throw new PreprocessorNotFound(preprocessor, preprocessors);
+		throw new PreprocessorNotFound(searchedPreprocessor, preprocessors);
 	}
 
 	return index;
