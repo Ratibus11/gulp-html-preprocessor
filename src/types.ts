@@ -1,10 +1,17 @@
 namespace preprocessor {
 	export namespace html {
 		export type comment = {
-			value: string;
 			instruction: string;
 			expression?: string;
 			uid: string;
+			value: string;
+		};
+
+		export type tag = {
+			value: string;
+			instruction: string;
+			delimiter?: "'" | '"';
+			content?: string;
 		};
 	}
 }

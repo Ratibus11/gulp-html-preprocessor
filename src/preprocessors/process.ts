@@ -1,5 +1,5 @@
-import { process as processComment } from "./comment";
-import { process as processTagAttribute } from "./tagAttribute";
+import { processComments } from "./comment";
+import { processTags } from "./tagAttribute";
 import { preprocessorVariables } from "../types";
 
 import { load } from "../utils/file";
@@ -12,9 +12,9 @@ import { load } from "../utils/file";
 function process(path: string, variables: preprocessorVariables): string {
 	var data = load(path);
 
-	data = processComment(data, variables);
+	data = processComments(data, variables);
+	data = processTags(data);
 	console.log(data);
-	data = processTagAttribute(data);
 
 	return data;
 }

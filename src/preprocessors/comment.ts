@@ -1,4 +1,3 @@
-import * as types from "../types";
 import { preprocessor, preprocessorVariables } from "../types";
 import {
 	notInIf,
@@ -11,7 +10,10 @@ import { generate } from "../utils/unique";
 
 const regex = /<!--\s{0,}@(.*?)\s{1,}(.*?)\s{0,}-->/gi;
 
-function process(data: string, variables: preprocessorVariables): string {
+function processComments(
+	data: string,
+	variables: preprocessorVariables
+): string {
 	let preprocessors = getPreprocessors(data);
 
 	preprocessors.forEach((preprocessor) => {
@@ -217,4 +219,4 @@ function getPreprocessorIndex(
 	});
 }
 
-export { process };
+export { processComments };
