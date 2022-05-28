@@ -1,5 +1,10 @@
 import { preprocessor } from "../types";
 import { normalize } from "path";
+import {
+	CannotNormalizePath,
+	MissingValue,
+	UnexpectedPreprocessor,
+} from "../errors/preprocessor/attribute";
 require("dotenv").config();
 
 const dotEnvIdentifier = "GHP_";
@@ -21,11 +26,11 @@ function processAsset(data: string, preprocessor: preprocessor.html.tag) {
 	const defaultPath = "assets/";
 
 	if (preprocessor.instruction != "asset") {
-		throw "Preprocessor is not 'asset'!";
+		throw new UnexpectedPreprocessor(preprocessor);
 	}
 
 	if (preprocessor.value == "undefined") {
-		throw "Invalid 'asset' format. Missing value";
+		throw new MissingValue(preprocessor);
 	}
 
 	try {
@@ -36,7 +41,11 @@ function processAsset(data: string, preprocessor: preprocessor.html.tag) {
 		let removed = preprocessor.value;
 		return data.replace(removed, content);
 	} catch {
-		throw "Failed to normalize given path";
+		throw new CannotNormalizePath(
+			(eval(`process.env.${getDotEnvName("ASSET")}`) ?? defaultPath) +
+				preprocessor.content,
+			preprocessor
+		);
 	}
 }
 

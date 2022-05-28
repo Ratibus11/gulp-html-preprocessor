@@ -1,10 +1,10 @@
 import { preprocessor, preprocessorVariables } from "../types";
 import {
-	notInIf,
-	ifNotClosed,
-	noExpression,
-	endifWithExpression,
-} from "../errors";
+	MissingEndIf,
+	MissingExpression,
+	NotInIf,
+	UnexpectedExpression,
+} from "../errors/preprocessor/comment";
 import { generate } from "../utils/unique";
 
 const regex = /<!--\s{0,}@(.*?)\s{1,}(.*?)\s{0,}-->/gi;
@@ -34,7 +34,7 @@ function processComments(
 					case "elseif":
 					case "else":
 					case "endif":
-						notInIf(preprocessor);
+						throw new NotInIf(preprocessor);
 				}
 			}
 		});
@@ -50,7 +50,7 @@ function processIf(
 	data: string
 ): string {
 	if (preprocessor.instruction != "if") {
-		throw "Not an 'if' instruction.";
+		throw new NotInIf(preprocessor);
 	}
 
 	var startIf = preprocessor;
@@ -61,7 +61,7 @@ function processIf(
 	while (true) {
 		if (startContent.instruction == "endif") {
 			if (startContent.expression != "") {
-				endifWithExpression(startContent);
+				throw new UnexpectedExpression(startContent);
 			}
 			return data;
 		}
@@ -127,7 +127,7 @@ function evaluateCondition(
 	}
 
 	if (preprocessor.expression == "") {
-		noExpression(preprocessor);
+		throw new MissingExpression(preprocessor);
 	}
 
 	const condition = preprocessor.expression!.replace(/(\\|'|"|`)/g, "\\$1");
@@ -204,7 +204,7 @@ function getNextSameLevelElement(
 		}
 	}
 
-	ifNotClosed();
+	throw new MissingEndIf();
 }
 
 function getPreprocessorIndex(
