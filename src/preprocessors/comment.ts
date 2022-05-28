@@ -9,15 +9,8 @@ import { generate } from "../utils/unique";
 
 const regex = /<!--\s{0,}@(.*?)\s{1,}(.*?)\s{0,}-->/gi;
 
-function processComments(
-	data: string,
-	variables: preprocessorVariables
-): string {
+function processComments(data: string, variables: preprocessorVariables) {
 	let preprocessors = getPreprocessors(data);
-
-	preprocessors.forEach((preprocessor) => {
-		data = data.replace(preprocessor.value, preprocessor.uid);
-	});
 
 	while (preprocessorsExists(preprocessors, data)) {
 		preprocessors.forEach((preprocessor) => {
@@ -48,12 +41,11 @@ function processIf(
 	preprocessors: preprocessor.html.comment[],
 	variables: preprocessorVariables,
 	data: string
-): string {
+) {
 	if (preprocessor.instruction != "if") {
 		throw new NotInIf(preprocessor);
 	}
 
-	var startIf = preprocessor;
 	var endIf = getEndIf(preprocessor, preprocessors);
 
 	var startContent = preprocessor;
@@ -70,21 +62,21 @@ function processIf(
 
 		if (evaluateCondition(startContent, variables)) {
 			let content = data.substring(
-				data.indexOf(startContent.uid) + startContent.uid.length,
-				data.indexOf(endContent.uid)
+				data.indexOf(startContent.value) + startContent.value.length,
+				data.indexOf(endContent.value)
 			);
 			let removed = data.substring(
-				data.indexOf(startContent.uid),
-				data.indexOf(endIf.uid) + endIf.uid.length
+				data.indexOf(startContent.value),
+				data.indexOf(endIf.value) + endIf.value.length
 			);
 
 			data = data.replace(removed, content);
 		} else {
 			let removed = data.substring(
-				data.indexOf(startContent.uid),
-				data.indexOf(endContent.uid) +
+				data.indexOf(startContent.value),
+				data.indexOf(endContent.value) +
 					(endContent.instruction == "endif"
-						? endContent.uid.length
+						? endContent.value.length
 						: 0)
 			);
 			data = data.replace(removed, "");
@@ -94,7 +86,7 @@ function processIf(
 	}
 }
 
-function getPreprocessors(data: string): preprocessor.html.comment[] {
+function getPreprocessors(data: string) {
 	let preprocessors: preprocessor.html.comment[] = [];
 
 	[...data.matchAll(regex)].forEach((match) => {
@@ -121,7 +113,7 @@ function getPreprocessors(data: string): preprocessor.html.comment[] {
 function evaluateCondition(
 	preprocessor: preprocessor.html.comment,
 	variables: preprocessorVariables
-): boolean {
+) {
 	if (preprocessor.instruction == "else") {
 		return true;
 	}
@@ -156,10 +148,10 @@ function evaluateCondition(
 function preprocessorsExists(
 	preprocessors: preprocessor.html.comment[],
 	data: string
-): boolean {
+) {
 	return (
 		preprocessors.findIndex((preprocessor) => {
-			return data.includes(preprocessor.uid);
+			return data.includes(preprocessor.value);
 		}) != -1
 	);
 }
@@ -174,7 +166,7 @@ function getEndIf(
 function getNextCondition(
 	preprocessor: preprocessor.html.comment,
 	preprocessors: preprocessor.html.comment[]
-): preprocessor.html.comment {
+) {
 	return getNextSameLevelElement(preprocessor, preprocessors, [
 		"elseif",
 		"else",
@@ -186,7 +178,7 @@ function getNextSameLevelElement(
 	startPreprocessor: preprocessor.html.comment,
 	preprocessors: preprocessor.html.comment[],
 	names: string[]
-): preprocessor.html.comment {
+) {
 	var index = getPreprocessorIndex(startPreprocessor.uid, preprocessors);
 
 	var ifDepth = 0;
