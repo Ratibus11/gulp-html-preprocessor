@@ -4,7 +4,7 @@ import * as types from "../../types";
 const exceptionType = "comment";
 
 /**
- * Generic exception for HTML comments preprocessors
+ * @throws Generic exception for HTML comments preprocessors
  */
 class CommentPreprocessorException extends PreprocessorException {
 	constructor(
@@ -20,7 +20,19 @@ class CommentPreprocessorException extends PreprocessorException {
 }
 
 /**
- * HTML comment preprocessor have no expression.
+ * @throws Unexpected preprocessor in a part of the code.
+ */
+class UnexpectedPreprocessor extends CommentPreprocessorException {
+	constructor(preprocessor: types.preprocessor.html.comment) {
+		super(
+			`Unexpected preprocessor '${preprocessor.instruction}'.`,
+			preprocessor
+		);
+	}
+}
+
+/**
+ * @throws HTML comment preprocessor have no expression.
  */
 class UnexpectedExpression extends CommentPreprocessorException {
 	constructor(preprocessor: types.preprocessor.html.comment) {
@@ -29,7 +41,7 @@ class UnexpectedExpression extends CommentPreprocessorException {
 }
 
 /**
- * HTML comment preprocessor have no expression.
+ * @throws HTML comment preprocessor have no expression.
  */
 class MissingExpression extends CommentPreprocessorException {
 	constructor(preprocessor: types.preprocessor.html.comment) {
@@ -55,4 +67,10 @@ class MissingEndIf extends CommentPreprocessorException {
 	}
 }
 
-export { UnexpectedExpression, MissingExpression, NotInIf, MissingEndIf };
+export {
+	UnexpectedExpression,
+	UnexpectedPreprocessor,
+	MissingExpression,
+	NotInIf,
+	MissingEndIf,
+};

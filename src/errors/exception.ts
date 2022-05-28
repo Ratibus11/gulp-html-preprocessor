@@ -1,5 +1,5 @@
 /**
- * Generic exception for `gulp-html-preprocessor` extension
+ * @throws Generic exception for `gulp-html-preprocessor` extension
  */
 class GulpHtmlPreprocessorException extends Error {
 	constructor(message: string) {
@@ -8,7 +8,7 @@ class GulpHtmlPreprocessorException extends Error {
 }
 
 /**
- * Generic exception for preprocessors.
+ * @throws Generic exception for preprocessors.
  */
 class PreprocessorException extends GulpHtmlPreprocessorException {
 	constructor(errorMessage: string, type: "comment" | "attribute") {
