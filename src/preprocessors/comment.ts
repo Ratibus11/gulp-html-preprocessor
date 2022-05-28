@@ -2,7 +2,6 @@ import { preprocessor, preprocessorVariables } from "../types";
 import {
 	notInIf,
 	ifNotClosed,
-	unsupportedInstruction,
 	noExpression,
 	endifWithExpression,
 } from "../errors";
@@ -36,8 +35,6 @@ function processComments(
 					case "else":
 					case "endif":
 						notInIf(preprocessor);
-					default:
-						unsupportedInstruction(preprocessor);
 				}
 			}
 		});
