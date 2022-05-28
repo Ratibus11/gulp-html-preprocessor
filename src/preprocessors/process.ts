@@ -1,6 +1,7 @@
 import { processComments } from "./comment";
 import { processTags } from "./tagAttribute";
 import { preprocessorVariables } from "../types";
+import pretty from "pretty";
 
 /**
  * Execute HTML preprocessor on the given data string with given variables.
@@ -8,17 +9,11 @@ import { preprocessorVariables } from "../types";
  * @param variables Variables used with the preprocessors.
  * @returns Processed data string with HTML preprocessors.
  */
-function process(data: string, variables: preprocessorVariables): string {
+function process(data: string, variables: preprocessorVariables) {
 	data = processComments(data, variables);
 	data = processTags(data);
 
-	data = data
-		.split("\n")
-		.filter((line) => {
-			return line.trim() != "";
-		})
-		.join("\n");
-
+	data = pretty(data, { ocd: true });
 	return data;
 }
 
