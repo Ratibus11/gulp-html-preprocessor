@@ -6,8 +6,8 @@ import { obj, TransformCallback } from "through2";
 import { process as processFile } from "./preprocessors/process";
 
 /**
- * Extension's entry point. Process all files which matches with the given globs.
- * @param options Variables to process. Can be strings, numbers or booleans.
+ * Extension's entry point. Process all files which matches with gulp.src's globs.
+ * @param options Variables to process. Can be any JS-exacutable expression.
  */
 function process(options: preprocessorVariables = {}) {
 	return obj(

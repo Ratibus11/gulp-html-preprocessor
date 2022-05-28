@@ -4,12 +4,23 @@ import {
 	MissingExpression,
 	NotInIf,
 	UnexpectedExpression,
+	UnexpectedPreprocessor,
+	PreprocessorNotFound,
 } from "../errors/preprocessor/comment";
 import { generate } from "../utils/unique";
 
 const regex = /<!--\s{0,}@(.*?)\s{1,}(.*?)\s{0,}-->/gi;
 
-function processComments(data: string, variables: preprocessorVariables) {
+/**
+ * Process comments preprocessors in the given data.
+ * @param data HTML string to process.
+ * @param variables Variables used with the preprocessors.
+ * @returns Comments preprocessors-processed HTML string.
+ */
+function processComments(
+	data: string,
+	variables: preprocessorVariables
+): string {
 	let preprocessors = getPreprocessors(data);
 
 	while (preprocessorsExists(preprocessors, data)) {
@@ -36,17 +47,29 @@ function processComments(data: string, variables: preprocessorVariables) {
 	return data;
 }
 
+/**
+ * Process encountered `if`.
+ * @param preprocessor `if` preprocessor to process.
+ * @param preprocessors All HTML string's preprocessors.
+ * @param variables Variables used with the preprocessors.
+ * @param data HTML string to process.
+ * @returns `if` comment preprocessor-processed (with its `elseif`, `else` and `endif`) HTML string.
+ * @throws {UnexpectedPreprocessor} Preprocessor instruction is not `if`.
+ * @throws {UnexpectedExpression} `endif` cannot have expression.
+ */
 function processIf(
 	preprocessor: preprocessor.html.comment,
 	preprocessors: preprocessor.html.comment[],
 	variables: preprocessorVariables,
 	data: string
-) {
+): string {
 	if (preprocessor.instruction != "if") {
-		throw new NotInIf(preprocessor);
+		throw new UnexpectedPreprocessor(preprocessor);
 	}
 
-	var endIf = getEndIf(preprocessor, preprocessors);
+	var endIf = getNextSameLevelPreprocessor(preprocessor, preprocessors, [
+		"endif",
+	]);
 
 	var startContent = preprocessor;
 
@@ -58,7 +81,11 @@ function processIf(
 			return data;
 		}
 
-		var endContent = getNextCondition(startContent, preprocessors);
+		var endContent = getNextSameLevelPreprocessor(
+			preprocessor,
+			preprocessors,
+			["elseif", "else", "endif"]
+		);
 
 		if (evaluateCondition(startContent, variables)) {
 			let content = data.substring(
@@ -86,7 +113,12 @@ function processIf(
 	}
 }
 
-function getPreprocessors(data: string) {
+/**
+ * Get HTML string's preprocessors.
+ * @param data HTML string to extract preprocessors.
+ * @returns Array of preprocessors.
+ */
+function getPreprocessors(data: string): preprocessor.html.comment[] {
 	let preprocessors: preprocessor.html.comment[] = [];
 
 	[...data.matchAll(regex)].forEach((match) => {
@@ -99,7 +131,6 @@ function getPreprocessors(data: string) {
 			instruction: instruction,
 			expression: expression,
 			uid: generate(
-				data,
 				preprocessors.map((preprocessor) => {
 					return preprocessor.uid;
 				})
@@ -110,10 +141,22 @@ function getPreprocessors(data: string) {
 	return preprocessors;
 }
 
+/**
+ * Evaluate the given preprocessor with the given variables (used if needed).
+ * @param preprocessor Preprocessor to evaluate its condition.
+ * @param variables
+ * @returns Evaluation's result.
+ * @throws {UnexpectedPreprocessor} Preprocessor instruction is not `if`, `elseif` or `else`.
+ * @throws {MissingExpression} Preprocessor must have expression (only if not `else`).
+ */
 function evaluateCondition(
 	preprocessor: preprocessor.html.comment,
 	variables: preprocessorVariables
-) {
+): boolean {
+	if (!["if", "elseif", "else"].includes(preprocessor.instruction)) {
+		throw new UnexpectedExpression(preprocessor);
+	}
+
 	if (preprocessor.instruction == "else") {
 		return true;
 	}
@@ -145,10 +188,16 @@ function evaluateCondition(
 	return eval(`new Function(${expression})()`);
 }
 
+/**
+ * Check if given preprocessors exist in the given data.
+ * @param preprocessors Preprocessors to check their existance.
+ * @param data HTML string to check.
+ * @returns `true` if at least one preprocessor exists in the data string. `false` otherwise.
+ */
 function preprocessorsExists(
 	preprocessors: preprocessor.html.comment[],
 	data: string
-) {
+): boolean {
 	return (
 		preprocessors.findIndex((preprocessor) => {
 			return data.includes(preprocessor.value);
@@ -156,30 +205,24 @@ function preprocessorsExists(
 	);
 }
 
-function getEndIf(
-	preprocessor: preprocessor.html.comment,
-	preprocessors: preprocessor.html.comment[]
-): preprocessor.html.comment {
-	return getNextSameLevelElement(preprocessor, preprocessors, ["endif"]);
-}
-
-function getNextCondition(
-	preprocessor: preprocessor.html.comment,
-	preprocessors: preprocessor.html.comment[]
-) {
-	return getNextSameLevelElement(preprocessor, preprocessors, [
-		"elseif",
-		"else",
-		"endif",
-	]);
-}
-
-function getNextSameLevelElement(
+/**
+ *
+ * @param startPreprocessor Preprocessor to start research.
+ * @param preprocessors All preprocessors to search.
+ * @param names Preprocessors instructions to find.
+ * @returns First same-level preprocessor where instruction is in `names`.
+ * @throws {UnexpectedPreprocessor} If `startPreprocessor`'s instruction is `endif`.
+ */
+function getNextSameLevelPreprocessor(
 	startPreprocessor: preprocessor.html.comment,
 	preprocessors: preprocessor.html.comment[],
 	names: string[]
-) {
-	var index = getPreprocessorIndex(startPreprocessor.uid, preprocessors);
+): preprocessor.html.comment {
+	if (startPreprocessor.instruction == "endif") {
+		throw new UnexpectedPreprocessor(startPreprocessor);
+	}
+
+	var index = getPreprocessorIndex(startPreprocessor, preprocessors);
 
 	var ifDepth = 0;
 	for (let i = index + 1; i < preprocessors.length; i++) {
@@ -199,13 +242,26 @@ function getNextSameLevelElement(
 	throw new MissingEndIf();
 }
 
+/**
+ * Get preprocessor's index in preprocessors array.
+ * @param preprocessor Preprocessor to find.
+ * @param preprocessors Preprocessors list to find preprocessor's index.
+ * @returns `preprocessor`'s index.
+ * @throws {PreprocessorNotFound} `preprocessor` is not in `preprocessors`.
+ */
 function getPreprocessorIndex(
-	uid: string,
+	preprocessor: preprocessor.html.comment,
 	preprocessors: preprocessor.html.comment[]
-) {
-	return preprocessors.findIndex((preprocessor) => {
-		return preprocessor.uid == uid;
+): number {
+	let index = preprocessors.findIndex((preprocessor) => {
+		return preprocessor.uid == preprocessor.uid;
 	});
+
+	if (index == -1) {
+		throw new PreprocessorNotFound(preprocessor, preprocessors);
+	}
+
+	return index;
 }
 
 export { processComments };

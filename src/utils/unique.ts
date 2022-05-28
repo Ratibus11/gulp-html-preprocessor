@@ -3,11 +3,11 @@ import { randomBytes } from "crypto";
 const size = 20;
 
 /**
- * Generate a random string key
- * @param keys If given, will generate a key that is not existing in the array
- * @returns Generated key
+ * Generate a random string key.
+ * @param keys If given, will generate a key that is not existing in the array.
+ * @returns Generated key.
  */
-function generate(data: string, keys?: string[]): string {
+function generate(keys?: string[]): string {
 	if (keys == undefined) {
 		return randomBytes(size).toString("hex");
 	}
@@ -15,7 +15,7 @@ function generate(data: string, keys?: string[]): string {
 	let newKey;
 	do {
 		newKey = randomBytes(size).toString("hex");
-	} while (keys.includes(newKey) && data.includes(newKey));
+	} while (keys.includes(newKey));
 	return newKey;
 }
 

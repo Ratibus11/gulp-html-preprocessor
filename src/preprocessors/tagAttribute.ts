@@ -9,7 +9,12 @@ require("dotenv").config();
 
 const dotEnvIdentifier = "GHP_";
 
-function processTags(data: string) {
+/**
+ * Process comments preprocessors in the given data.
+ * @param data HTML string to process.
+ * @returns Comments preprocessors-processed HTML string.
+ */
+function processTags(data: string): string {
 	let preprocessors = getPreprocessors(data);
 
 	preprocessors.forEach((preprocessor) => {
@@ -22,17 +27,26 @@ function processTags(data: string) {
 	return data;
 }
 
+/**
+ * Process encountered `asset`.
+ * @param data HTML string to process.
+ * @param preprocessor `asset` preprocessor to process.
+ * @returns `asset` comment preprocessor-processed HTML string.
+ * @throws {UnexpectedPreprocessor} Preprocessor instruction must be `asset`.
+ * @throws {MissingValue} Preprocessor instruction cannot be empty.
+ * @throws {CannotNormalizePath} Failed to normalize new path.
+ */
 function processAsset(
 	data: string,
 	preprocessor: preprocessor.html.tagAttribute
-) {
-	const defaultPath = "assets/";
+): string {
+	const defaultPath = "/assets/";
 
 	if (preprocessor.instruction != "asset") {
 		throw new UnexpectedPreprocessor(preprocessor);
 	}
 
-	if (preprocessor.value == "undefined") {
+	if (preprocessor.value == undefined) {
 		throw new MissingValue(preprocessor);
 	}
 
@@ -52,7 +66,12 @@ function processAsset(
 	}
 }
 
-function getPreprocessors(data: string) {
+/**
+ * Get HTML string's preprocessors.
+ * @param data HTML string to extract preprocessors.
+ * @returns Array of preprocessors.
+ */
+function getPreprocessors(data: string): preprocessor.html.tagAttribute[] {
 	const tagRegex = /<(?!!--|\/)(.*?)(?!--)>/g;
 	const preprocessorWithoutValueRegex = /@(.[^=]*?)(?:$|\s)/g;
 	const preprocessorWithoutQuotesRegex =
@@ -94,8 +113,13 @@ function getPreprocessors(data: string) {
 	return output;
 }
 
+/**
+ * Return .env parameter's name
+ * @param name Attribute's name.
+ * @returns .env-converted attribute's name.
+ */
 function getDotEnvName(name: string) {
-	return dotEnvIdentifier + name;
+	return dotEnvIdentifier + name.toUpperCase();
 }
 
 export { processTags };

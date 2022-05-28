@@ -67,10 +67,28 @@ class MissingEndIf extends CommentPreprocessorException {
 	}
 }
 
+/**
+ * Missing `endif` preprocessor.
+ */
+class PreprocessorNotFound extends CommentPreprocessorException {
+	constructor(
+		preprocessor: types.preprocessor.html.comment,
+		preprocessors: types.preprocessor.html.comment[]
+	) {
+		const preprocessorsList = preprocessors.map((preprocessor) => {
+			return `${preprocessor},\n`;
+		});
+		super(
+			`Preprocessor '${preprocessor.value}' not found in preprocessors:\n${preprocessorsList}`
+		);
+	}
+}
+
 export {
 	UnexpectedExpression,
 	UnexpectedPreprocessor,
 	MissingExpression,
 	NotInIf,
 	MissingEndIf,
+	PreprocessorNotFound,
 };
