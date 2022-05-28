@@ -1,9 +1,15 @@
+/**
+ * Generic exception for `gulp-html-preprocessor` extension
+ */
 class GulpHtmlPreprocessorException extends Error {
 	constructor(message: string) {
 		super(message);
 	}
 }
 
+/**
+ * Generic exception for preprocessors.
+ */
 class PreprocessorException extends GulpHtmlPreprocessorException {
 	constructor(errorMessage: string, type: "comment" | "attribute") {
 		super(
@@ -12,10 +18,4 @@ class PreprocessorException extends GulpHtmlPreprocessorException {
 	}
 }
 
-class UtilsException extends GulpHtmlPreprocessorException {
-	constructor(errorMessage: string) {
-		super(`Exception while running util process: ${errorMessage}`);
-	}
-}
-
-export { PreprocessorException, UtilsException };
+export { PreprocessorException };
