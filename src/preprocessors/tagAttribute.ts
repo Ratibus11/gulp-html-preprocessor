@@ -4,7 +4,7 @@ import {
 	CannotNormalizePath,
 	MissingValue,
 	UnexpectedPreprocessor,
-} from "../errors/preprocessor/attribute";
+} from "../errors/preprocessor/tagAttribute";
 require("dotenv").config();
 
 const dotEnvIdentifier = "GHP_";
@@ -22,7 +22,10 @@ function processTags(data: string) {
 	return data;
 }
 
-function processAsset(data: string, preprocessor: preprocessor.html.tag) {
+function processAsset(
+	data: string,
+	preprocessor: preprocessor.html.tagAttribute
+) {
 	const defaultPath = "assets/";
 
 	if (preprocessor.instruction != "asset") {
@@ -56,7 +59,7 @@ function getPreprocessors(data: string) {
 		/@(.[^\s]*?)\s{0,}=\s{0,}([^"|']*?)(?:$|\s)/g;
 	const preprocessorWithQuotesRegex = /@(.[^\s]*?)\s{0,}=\s{0,}("|')(.*?)\2/g;
 
-	let output: preprocessor.html.tag[] = [];
+	let output: preprocessor.html.tagAttribute[] = [];
 
 	let tags = [...data.matchAll(tagRegex)].map((match) => {
 		return match[1];

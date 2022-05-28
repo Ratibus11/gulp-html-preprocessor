@@ -7,7 +7,7 @@ namespace preprocessor {
 			value: string;
 		};
 
-		export type tag = {
+		export type tagAttribute = {
 			value: string;
 			instruction: string;
 			delimiter?: "'" | '"';
@@ -17,7 +17,7 @@ namespace preprocessor {
 }
 
 type preprocessorVariables = {
-	[key: string]: string | number | boolean;
+	[key: string]: any;
 };
 
 export { preprocessor, preprocessorVariables };
